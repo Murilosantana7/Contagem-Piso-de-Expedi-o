@@ -1,0 +1,43 @@
+# Nome do workflow
+name: Executar Script Python
+
+# Quando o workflow será acionado
+on:
+  schedule:
+    - cron: '0 * * * *'  # Roda a cada hora, no minuto 0
+  workflow_dispatch: # Permite acionamento manual
+
+# Os jobs (tarefas) a serem executadas
+jobs:
+  run-script:
+    # A VM onde o script será executado
+    runs-on: ubuntu-latest
+
+    # As etapas do job
+    steps:
+      # Etapa 1: Faz o checkout do seu código
+      - name: Checkout do Repositório
+        uses: actions/checkout@v4
+
+      # Etapa 2: Configura o ambiente Python
+      - name: Configurar Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.10'
+
+      # Etapa 3: Instala as dependências
+      - name: Instalar Dependências
+        run: |
+          python -m pip install --upgrade pip
+          pip install gspread pandas google-auth google-auth-oauthlib requests
+
+      # Etapa 4: Configura as credenciais
+      - name: Configurar Credenciais
+        env:
+          GOOGLE_CREDENTIALS: ${{ secrets.GOOGLE_CREDENTIALS }}
+        run: |
+          echo "$GOOGLE_CREDENTIALS" > credentials.json
+
+      # Etapa 5: Executa o script
+      - name: Executar o Script
+        run: python Robô.murilo.py  # Verifique o nome do seu arquivo aqui
