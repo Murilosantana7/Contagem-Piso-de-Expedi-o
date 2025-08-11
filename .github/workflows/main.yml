@@ -32,7 +32,7 @@ jobs:
           pip install gspread pandas google-auth google-auth-oauthlib requests
 
       # Etapa 4: Configura as credenciais
-      - name: Configurar Credenciais
+      - name: Configurar Credenciais (Conta de Serviço)
         env:
           GOOGLE_CREDENTIALS: ${{ secrets.GOOGLE_CREDENTIALS }}
         run: |
@@ -40,4 +40,4 @@ jobs:
 
       # Etapa 5: Executa o script
       - name: Executar o Script
-        run: python Robô.murilo.py  # Verifique o nome do seu arquivo aqui
+        run: python Robô.murilo.py
