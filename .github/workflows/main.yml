@@ -13,6 +13,12 @@ jobs:
       - name: Checkout do Repositório
         uses: actions/checkout@v4
 
+      - name: Listar arquivos no repositório
+        run: ls -la
+
+      - name: Mostrar conteúdo do requirements.txt
+        run: cat requirements.txt
+
       - name: Instalar Python
         uses: actions/setup-python@v4
         with:
