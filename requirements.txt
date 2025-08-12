@@ -1,8 +1,5 @@
 pandas
 gspread
-pickle5
-os
-time
-requests
-google-auth
 google-auth-oauthlib
+google-auth
+requests
