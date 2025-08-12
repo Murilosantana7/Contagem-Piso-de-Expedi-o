@@ -15,7 +15,7 @@ jobs:
       - name: Instalar Python
         uses: actions/setup-python@v4
         with:
-          python-version: '3.10'
+          python-version: '3.8'
 
       - name: Instalar Dependências
         run: |
@@ -36,4 +36,4 @@ jobs:
           playwright install chromium
 
       - name: Executar o script
-        run: python Robô.murilo.py
+        run: xvfb-run python Robô.murilo.py
