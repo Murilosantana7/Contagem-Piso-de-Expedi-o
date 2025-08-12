@@ -3,7 +3,7 @@ name: Executar Script Python
 on:
   schedule:
     - cron: '0 * * * *'  # Roda todo início de hora
-  workflow_dispatch:      # Permite execução manual
+  workflow_dispatch:     # Permite execução manual
 
 jobs:
   run-script:
@@ -20,6 +20,11 @@ jobs:
 
       - name: Restaurar credentials.json
         run: echo "${{ secrets.GOOGLE_CREDENTIALS }}" | base64 -d > credentials.json
+        env:
+          GOOGLE_CREDENTIALS: ${{ secrets.GOOGLE_CREDENTIALS }}
+
+      - name: Restaurar token.pickle
+        run: echo "${{ secrets.GOOGLE_TOKEN }}" | base64 -d > token.pickle
 
       - name: Instalar Dependências
         run: |
