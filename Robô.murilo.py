@@ -7,13 +7,11 @@ import os
 import requests
 import time
 
-
 SCOPES = ['https://www.googleapis.com/auth/spreadsheets']
 SPREADSHEET_ID = '1hoXYiyuArtbd2pxMECteTFSE75LdgvA2Vlb6gPpGJ-g'
 NOME_ABA = 'Contagem'
-INTERVALO = 'C:G'
+INTERVALO = 'C:H'
 WEBHOOK_URL = "https://openapi.seatalk.io/webhook/group/5KZq9RrWR5eEbMCzBoapOw"
-
 
 def autenticar_google():
     creds = None
@@ -32,7 +30,6 @@ def autenticar_google():
             pickle.dump(creds, token)
             
     return creds
-
 
 def obter_totais_por_fanout(spreadsheet_id, nome_aba, intervalo):
     try:
@@ -57,7 +54,7 @@ def obter_totais_por_fanout(spreadsheet_id, nome_aba, intervalo):
             break
     
     if header_row_index == -1:
-        return "Não foi possível encontrar a linha do cabeçalho 'FANOUT' no intervalo C:G."
+        return "Não foi possível encontrar a linha do cabeçalho 'FANOUT' no intervalo C:H."
 
     headers = [h.strip() for h in dados[header_row_index]]
     data = dados[header_row_index + 1:]
@@ -77,7 +74,6 @@ def obter_totais_por_fanout(spreadsheet_id, nome_aba, intervalo):
         df[col] = pd.to_numeric(df[col], errors='coerce').fillna(0)
     
     totais_por_fanout = df.groupby('FANOUT', sort=False)[colunas_a_somar].sum().reset_index()
-    
     totais_por_fanout = totais_por_fanout[(totais_por_fanout[colunas_a_somar] != 0).any(axis=1)]
 
     if totais_por_fanout.empty:
@@ -109,7 +105,6 @@ def obter_totais_por_fanout(spreadsheet_id, nome_aba, intervalo):
 
     return "\n".join(mensagens_list)
 
-
 def enviar_webhook(mensagem):
     try:
         mensagem_formatada = "```\n" + mensagem + "\n```"
@@ -125,23 +120,23 @@ def enviar_webhook(mensagem):
         response = requests.post(url=WEBHOOK_URL, json=payload)
         response.raise_for_status()
         print("Mensagem enviada com sucesso.")
+        print(f"Status HTTP: {response.status_code}")
+        print(f"Resposta do servidor: {response.text}")
         
     except requests.exceptions.RequestException as err:
         print(f"Erro ao enviar mensagem para o webhook: {err}")
 
-
 def main():
     mensagem_unica = obter_totais_por_fanout(SPREADSHEET_ID, NOME_ABA, INTERVALO)
 
-    print(mensagem_unica)
+    print("Mensagem a enviar:\n", mensagem_unica)
     
     if not mensagem_unica.startswith("Erro") and not mensagem_unica.startswith("Nenhum"):
         enviar_webhook("Segue o piso da expedição")
-        
         time.sleep(1)
-        
         enviar_webhook(mensagem_unica)
-
+    else:
+        print("Mensagem não enviada pois houve erro ou não há dados válidos.")
 
 if __name__ == "__main__":
     main()
