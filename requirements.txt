@@ -1,0 +1,8 @@
+pandas
+gspread
+pickle
+os
+time
+requests
+google-auth
+google-auth-oauthlib
