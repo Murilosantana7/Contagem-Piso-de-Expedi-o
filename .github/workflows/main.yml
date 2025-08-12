@@ -19,6 +19,11 @@ jobs:
       - name: Checkout do Repositório
         uses: actions/checkout@v4
 
+      # Etapa de diagnóstico: Lista os arquivos na raiz do repositório
+      - name: Listar arquivos na raiz do repositório
+        run: |
+          ls -R
+
       # Etapa 2: Configura o ambiente Python
       - name: Configurar Python
         uses: actions/setup-python@v5
