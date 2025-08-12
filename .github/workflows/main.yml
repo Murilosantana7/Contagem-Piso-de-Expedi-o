@@ -2,8 +2,8 @@ name: Executar Script Python
 
 on:
   schedule:
-    - cron: '0 * * * *'  # Roda a cada hora, no minuto 0
-  workflow_dispatch:        # Permite execução manual
+    - cron: '0 * * * *' # Roda todo início de hora
+  workflow_dispatch:     # Execução manual
 
 jobs:
   run-script:
@@ -12,15 +12,14 @@ jobs:
     steps:
       - name: Checkout do Repositório
         uses: actions/checkout@v4
+
       - name: Instalar Python
         uses: actions/setup-python@v4
         with:
-          python-version: '3.8'
+          python-version: '3.13'
 
-      - name: Restaurar hxh.json
-        shell: bash
-        run: |
-          echo "$GOOGLE_CREDENTIALS" | base64 -d > credentials.json
+      - name: Restaurar credentials.json
+        run: echo "$GOOGLE_CREDENTIALS" | base64 -d > credentials.json
         env:
           GOOGLE_CREDENTIALS: ${{ secrets.GOOGLE_CREDENTIALS }}
           
@@ -30,4 +29,4 @@ jobs:
           pip install -r requirements.txt
 
       - name: Executar o script
-        run: xvfb-run python Robô.murilo.py
+        run: python Robô.murilo.py
