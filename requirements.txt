@@ -1,6 +1,6 @@
 pandas
 gspread
-pickle
+pickle5
 os
 time
 requests
