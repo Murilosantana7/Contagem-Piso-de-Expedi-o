@@ -18,10 +18,10 @@ jobs:
         with:
           python-version: '3.13'
 
-      - name: Restaurar service_account.json
+      - name: Restaurar service_account.json a partir do Base64
         run: |
           mkdir -p GOOGLE_CREDENTIALS
-          printf '%s' "${{ secrets.GOOGLE_CREDENTIALS }}" > GOOGLE_CREDENTIALS/service_account.json
+          echo "${{ secrets.GOOGLE_CREDENTIALS }}" | base64 --decode > GOOGLE_CREDENTIALS/service_account.json
 
       - name: Instalar Dependências
         run: |
