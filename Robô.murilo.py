@@ -12,11 +12,12 @@ INTERVALO = 'C:H'
 WEBHOOK_URL = "https://openapi.seatalk.io/webhook/group/5KZq9RrWR5eEbMCzBoapOw"
 
 def autenticar_google():
-    # Caminho para o arquivo JSON da service account, que será restaurado na pasta GOOGLE_CREDENTIALS
-    credentials_path = os.path.join('GOOGLE_CREDENTIALS', 'service_account.json')
-    
+    # Usa variável de ambiente se definida (GitHub Actions) ou caminho padrão local
+    credentials_path = os.getenv(
+        "GOOGLE_CREDENTIALS_PATH",
+        os.path.join('GOOGLE_CREDENTIALS', 'service_account.json')
+    )
     creds = Credentials.from_service_account_file(credentials_path, scopes=SCOPES)
-    
     return creds
 
 def obter_totais_por_fanout(spreadsheet_id, nome_aba, intervalo):
@@ -120,9 +121,8 @@ def main():
     print("Mensagem a enviar:\n", mensagem_unica)
     
     if not mensagem_unica.startswith("Erro") and not mensagem_unica.startswith("Nenhum"):
-        enviar_webhook("Segue o piso da expedição")
-        time.sleep(1)
-        enviar_webhook(mensagem_unica)
+        mensagem_final = "Segue o piso da expedição\n\n" + mensagem_unica
+        enviar_webhook(mensagem_final)
     else:
         print("Mensagem não enviada pois houve erro ou não há dados válidos.")
 
