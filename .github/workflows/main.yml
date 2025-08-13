@@ -9,8 +9,8 @@ jobs:
   run-script:
     runs-on: ubuntu-latest
 
-    env:
-      GOOGLE_CREDENTIALS_PATH: GOOGLE_CREDENTIALS/service_account.json
+    #env:
+     # GOOGLE_CREDENTIALS_PATH: GOOGLE_CREDENTIALS/service_account.json
 
     steps:
       - name: Checkout do Repositório
