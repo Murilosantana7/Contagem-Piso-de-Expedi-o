@@ -9,6 +9,9 @@ jobs:
   run-script:
     runs-on: ubuntu-latest
 
+    env:
+      GOOGLE_CREDENTIALS_PATH: GOOGLE_CREDENTIALS/service_account.json
+
     steps:
       - name: Checkout do Repositório
         uses: actions/checkout@v4
@@ -21,7 +24,7 @@ jobs:
       - name: Restaurar service_account.json a partir do Base64
         run: |
           mkdir -p GOOGLE_CREDENTIALS
-          echo "${{ secrets.GOOGLE_CREDENTIALS }}" | base64 --decode > GOOGLE_CREDENTIALS/service_account.json
+          echo "${{ secrets.GOOGLE_CREDENTIALS }}" | base64 --decode > $GOOGLE_CREDENTIALS_PATH
 
       - name: Instalar Dependências
         run: |
