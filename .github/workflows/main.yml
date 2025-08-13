@@ -21,9 +21,7 @@ jobs:
       - name: Restaurar service_account.json
         run: |
           mkdir -p GOOGLE_CREDENTIALS
-          echo "${{ secrets.GOOGLE_CREDENTIALS }}" | base64 -d > GOOGLE_CREDENTIALS/service_account.json
-        env:
-          GOOGLE_CREDENTIALS: ${{ secrets.GOOGLE_CREDENTIALS }}
+          printf '%s' "${{ secrets.GOOGLE_CREDENTIALS }}" > GOOGLE_CREDENTIALS/service_account.json
 
       - name: Instalar Dependências
         run: |
