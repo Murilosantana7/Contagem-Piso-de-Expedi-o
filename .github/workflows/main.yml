@@ -9,9 +9,6 @@ jobs:
   run-script:
     runs-on: ubuntu-latest
 
-    #env:
-     # GOOGLE_CREDENTIALS_PATH: GOOGLE_CREDENTIALS/service_account.json
-
     steps:
       - name: Checkout do Repositório
         uses: actions/checkout@v4
@@ -21,10 +18,12 @@ jobs:
         with:
           python-version: '3.13'
 
-      - name: Restaurar service_account.json a partir do Base64
+      - name: Restaurar hxh.json a partir do segredo
         run: |
-          mkdir -p GOOGLE_CREDENTIALS
-          echo "${{ secrets.GOOGLE_CREDENTIALS }}" | base64 --decode > $GOOGLE_CREDENTIALS_PATH
+          echo "$GOOGLE_CREDENTIALS" | base64 -d > service_account.json
+        shell: bash
+        env:
+          GOOGLE_CREDENTIALS: ${{ secrets.GOOGLE_CREDENTIALS }}
 
       - name: Instalar Dependências
         run: |
