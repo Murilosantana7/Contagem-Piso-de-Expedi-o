@@ -80,4 +80,42 @@ def obter_totais_por_fanout(spreadsheet_id, nome_aba, intervalo):
         larguras[col] = max(len(col), totais_por_fanout[col].astype(int).astype(str).str.len().max())
 
     mensagens_list = []
-    header_parts = ["FANOUT".ljust(largura]()_
+    header_parts = ["FANOUT".ljust(larguras['FANOUT'])] + [col.center(larguras[col]) for col in colunas_a_somar]
+    mensagens_list.append(" | ".join(header_parts))
+    separator_parts = ["-" * larguras['FANOUT']] + ["-" * larguras[col] for col in colunas_a_somar]
+    mensagens_list.append("-+-".join(separator_parts))
+
+    for _, row in totais_por_fanout.iterrows():
+        linha_parts = [str(row['FANOUT']).ljust(larguras['FANOUT'])] + [str(int(row[col])).center(larguras[col]) for col in colunas_a_somar]
+        mensagens_list.append(" | ".join(linha_parts))
+
+    return "\n".join(mensagens_list)
+
+def enviar_webhook(mensagem):
+    try:
+        mensagem_formatada = "```\n" + mensagem + "\n```"
+        payload = {
+            "tag": "text",
+            "text": {
+                "format": 1,
+                "content": mensagem_formatada
+            }
+        }
+        response = requests.post(url=WEBHOOK_URL, json=payload)
+        response.raise_for_status()
+        print("Mensagem enviada com sucesso.")
+    except requests.exceptions.RequestException as err:
+        print(f"Erro ao enviar mensagem para o webhook: {err}")
+
+def main():
+    mensagem_unica = obter_totais_por_fanout(SPREADSHEET_ID, NOME_ABA, INTERVALO)
+    print("Mensagem a enviar:\n", mensagem_unica)
+    
+    if not mensagem_unica.startswith("Erro") and not mensagem_unica.startswith("Nenhum"):
+        mensagem_final = "Segue o piso da expedição\n\n" + mensagem_unica
+        enviar_webhook(mensagem_final)
+    else:
+        print("Mensagem não enviada pois houve erro ou não há dados válidos.")
+
+if __name__ == "__main__":
+    main()
