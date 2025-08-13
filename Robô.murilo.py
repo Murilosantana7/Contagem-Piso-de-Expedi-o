@@ -22,9 +22,11 @@ def autenticar_google():
 
 def obter_totais_por_fanout(spreadsheet_id, nome_aba, intervalo):
     try:
-        creds = autenticar_google()
-        cliente = gspread.authorize(creds)
-        planilha = cliente.open_by_key(spreadsheet_id)
+        scope = ["https://www.googleapis.com/auth/spreadsheets", "https://www.googleapis.com/auth/drive"]
+        creds = ServiceAccountCredentials.from_json_keyfile_name("service_account.json", scope)
+        client = gspread.authorize(creds)
+        
+        planilha = client.open_by_key(spreadsheet_id)
         aba = planilha.worksheet(nome_aba)
     except Exception as e:
         return f"Erro ao conectar com a planilha: {e}"
@@ -128,3 +130,4 @@ def main():
 
 if __name__ == "__main__":
     main()
+
