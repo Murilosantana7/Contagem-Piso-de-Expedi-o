@@ -13,19 +13,23 @@ INTERVALO = 'C:H'
 WEBHOOK_URL = "https://openapi.seatalk.io/webhook/group/5KZq9RrWR5eEbMCzBoapOw"
 
 def autenticar_google():
-    # Lê a variável de ambiente contendo o JSON base64
     cred_base64 = os.getenv("GOOGLE_CREDENTIALS_BASE64")
     if not cred_base64:
-        raise ValueError("A variável de ambiente GOOGLE_CREDENTIALS_BASE64 não foi definida.")
+        raise ValueError("A variável de ambiente GOOGLE_CREDENTIALS_BASE64 não foi definida. Verifique seu workflow e secrets.")
 
-    # Decodifica e cria arquivo temporário
+    # Decodifica o base64 e grava num arquivo temporário
     cred_json = base64.b64decode(cred_base64)
-    with tempfile.NamedTemporaryFile(delete=False, suffix=".json") as tmp_file:
+    tmp_file = tempfile.NamedTemporaryFile(delete=False, suffix=".json")
+    try:
         tmp_file.write(cred_json)
-        tmp_path = tmp_file.name
-
-    # Cria credenciais
-    creds = Credentials.from_service_account_file(tmp_path, scopes=SCOPES)
+        tmp_file.close()
+        creds = Credentials.from_service_account_file(tmp_file.name, scopes=SCOPES)
+    finally:
+        # Remove o arquivo temporário de credencial (boa prática em CI/CD)
+        try:
+            os.unlink(tmp_file.name)
+        except Exception:
+            pass
     return creds
 
 def obter_totais_por_fanout(spreadsheet_id, nome_aba, intervalo):
@@ -110,7 +114,6 @@ def enviar_webhook(mensagem):
 def main():
     mensagem_unica = obter_totais_por_fanout(SPREADSHEET_ID, NOME_ABA, INTERVALO)
     print("Mensagem a enviar:\n", mensagem_unica)
-    
     if not mensagem_unica.startswith("Erro") and not mensagem_unica.startswith("Nenhum"):
         mensagem_final = "Segue o piso da expedição\n\n" + mensagem_unica
         enviar_webhook(mensagem_final)
