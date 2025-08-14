@@ -2,15 +2,12 @@ name: Executar Script Python
 
 on:
   schedule:
-    - cron: '0 * * * *'  # Roda todo início de hora
-  workflow_dispatch:      # Permite execução manual
+    - cron: '0 * * * *'
+  workflow_dispatch:
 
 jobs:
   run-script:
     runs-on: ubuntu-latest
-
-    env:
-      GOOGLE_CREDENTIALS_PATH: GOOGLE_CREDENTIALS/service_account.json
 
     steps:
       - name: Checkout do Repositório
@@ -19,13 +16,10 @@ jobs:
       - name: Instalar Python
         uses: actions/setup-python@v4
         with:
-          python-version: '3.13'
+          python-version: '3.12'
 
-      - name: Restaurar service_account.json a partir do segredo
-        run: |
-          mkdir -p GOOGLE_CREDENTIALS
-          echo "${{ secrets.GOOGLE_CREDENTIALS }}" | base64 --decode > $GOOGLE_CREDENTIALS_PATH
-          echo "Arquivo de credenciais criado em $GOOGLE_CREDENTIALS_PATH"
+      - name: Exportar GOOGLE_CREDENTIALS_BASE64
+        run: echo "GOOGLE_CREDENTIALS_BASE64=${{ secrets.GOOGLE_CREDENTIALS }}" >> $GITHUB_ENV
 
       - name: Instalar Dependências
         run: |
@@ -33,4 +27,4 @@ jobs:
           pip install -r requirements.txt
 
       - name: Executar o script Python
-        run: python Robô.murilo.py
+        run: python Robo_murilo.py
