@@ -27,4 +27,4 @@ jobs:
           pip install -r requirements.txt
 
       - name: Executar o script Python
-        run: python Robo_murilo.py
+        run: python robo_murilo.py
