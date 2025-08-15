@@ -4,7 +4,7 @@ from google.oauth2.service_account import Credentials
 import os
 import requests
 import base64
-import tempfile
+import json
 
 SCOPES = ['https://www.googleapis.com/auth/spreadsheets']
 SPREADSHEET_ID = '1hoXYiyuArtbd2pxMECteTFSE75LdgvA2Vlb6gPpGJ-g'
@@ -17,20 +17,19 @@ def autenticar_google():
     if not cred_base64:
         raise ValueError("A variável de ambiente GOOGLE_CREDENTIALS_BASE64 não foi definida. Verifique seu workflow e secrets.")
 
-    # Decodifica o base64 e grava num arquivo temporário
-    cred_json = base64.b64decode(cred_base64)
-    tmp_file = tempfile.NamedTemporaryFile(delete=False, suffix=".json")
     try:
-        tmp_file.write(cred_json)
-        tmp_file.close()
-        creds = Credentials.from_service_account_file(tmp_file.name, scopes=SCOPES)
-    finally:
-        # Remove o arquivo temporário de credencial (boa prática em CI/CD)
-        try:
-            os.unlink(tmp_file.name)
-        except Exception:
-            pass
-    return creds
+        cred_json = base64.b64decode(cred_base64)
+        cred_dict = json.loads(cred_json)
+
+        # DEBUG opcional: mostre os campos presentes nas credenciais
+        print("🔍 DEBUG: Campos encontrados na credencial:")
+        print(list(cred_dict.keys()))
+
+        creds = Credentials.from_service_account_info(cred_dict, scopes=SCOPES)
+        return creds
+
+    except Exception as e:
+        raise RuntimeError(f"Erro ao processar as credenciais: {e}")
 
 def obter_totais_por_fanout(spreadsheet_id, nome_aba, intervalo):
     try:
